@@ -2,10 +2,10 @@
 title: "Standard Deviation"
 output:
   html_notebook: default
+  word_document: default
   html_document:
     df_print: paged
   pdf_document: default
-  word_document: default
 ---
 
 More than a long list of good stocks and bonds, a good portfolio is a balanced whole providing the investor with protections and opportunities with respect to a wide range of contingencies. In the next, we will analyze the portfolio from the aspect of the return and the standard deviation.<br><br>
@@ -16,7 +16,7 @@ We constructed a portfolio based on the four funds given a weights vector [0.25,
 
 In order to show the time-dependent volatility of the portfolio and the four funds, we also calculated the rolling standard deviation and visualized them with ggplot and highcharter.
 The details of our code are above<br><br>
-Import the packages
+<font size = 5>Import the packages</font>
 ```{r}
 library(highcharter)
 library(tibbletime)
@@ -33,12 +33,13 @@ library(tidyverse)
 library(tidyquant)
 library(lubridate)
 ```
-The assets we selected are above:<br>
+The assets we selected are:<br>
   华夏成长证券投资基金 000001<br>
   中海可转换债券债券型证券投资基金A类 000003<br>
   国联安中证医药100指数证券投资基金 000059<br>
   广发美国房地产指数证券投资基金（美元）000180<br><br>
-Import the daily net value data of the four funds from the database
+  
+<font size = 5>Import the daily net value data of the four funds from the database</font>
 ```{r}
 mydb= dbConnect(MySQL(),user='ktruc002', password='35442fed', dbname='cn_stock_quote', host='172.19.3.250')
 SQL_statement<- "SELECT  `end_date`,  `fund_code`, `acc_net_value`
@@ -52,7 +53,7 @@ time <- funds$end_date %>% as.Date()
 funds <- xts(funds[2:5],time)
 tail(funds,5)
 ```
-Calculate the assets' monthly return series
+<font size = 5>Calculate the assets' monthly return series</font>
 
 ```{r}
 funds <- to.period(funds,period = "months")
@@ -65,12 +66,12 @@ asset_returns_xts <- asset_returns_xts["201309/201909"]
 names(asset_returns_xts) <- c("funds.000001","funds.000003","funds.000059","funds.000180")
 tail(asset_returns_xts,5)
 ```
-4.0 Compute portfolio covariance matrix
+<font size = 5>4.0 Compute portfolio covariance matrix</font>
 ```{r}
 covariance_matrix <- cov(asset_returns_xts)
 round(covariance_matrix,5)
 ```
-Genertate weights and calculate portfolio standard deviation
+<font size = 5>Genertate weights and calculate portfolio standard deviation</font>
 ```{r}
 w = c(0.25,0.3,0.25,0.2)
 # calculate standard deviation of portfolio
@@ -82,18 +83,17 @@ sd_matrix_algebra_percent <-
 sd_matrix_algebra_percent
 ```
 
-4.1 Calculate standard deviation using Performance Analytics
+<font size = 5>4.1 Calculate standard deviation using Performance Analytics</font>
 ```{r}
 portfolio_sd_xts_builtin <-
   PerformanceAnalytics::StdDev(asset_returns_xts, weights = w)
 #std in percent
 portfolio_sd_xts_builtin_percent <-
   round(portfolio_sd_xts_builtin * 100, 2)
-
 portfolio_sd_xts_builtin_percent
 ```
 
-4.2 Calculate standard deviation using tidyverse
+<font size = 5>4.2 Calculate standard deviation using tidyverse</font>
 ```{r}
 assets_returns_dplyr <- tk_tbl(asset_returns_xts)
 portfolio_returns_dplyr_byhand <- assets_returns_dplyr[1]
@@ -115,7 +115,7 @@ portfolio_sd_tidy_builtin_percent %>%
   select(dplyr, dplyr_byhand)
 portfolio_sd_tidy_builtin_percent
 ```
-4.3 Calculate standard deviation using tidyquant
+<font size = 5>4.3 Calculate standard deviation using tidyquant</font>
 
 ```{r}
 asset_returns_long <- assets_returns_dplyr %>% gather (assets,returns,-index) %>% group_by(assets)
@@ -135,7 +135,7 @@ portfolio_sd_tidyquant_builtin_percent <- tq_performance(portfolio_returns_tq_re
                                              mutate(tq_sd = round(Stdev,4)*100)
 portfolio_sd_tidyquant_builtin_percent
 ```
-Demonstrate the Stds calculated by different methods
+<font size = 5>Demonstrate the Stds calculated by different methods</font>
 ```{r}
 portfolio_sd_tidy_builtin_percent %>%
   select(dplyr, dplyr_byhand) %>%
@@ -144,8 +144,8 @@ portfolio_sd_tidy_builtin_percent %>%
          tq = portfolio_sd_tidyquant_builtin_percent$tq_sd)
 portfolio_sd_tidy_builtin_percent
 ```
-4.4 Visualizing Standard Deviation<br>
-Show the scatter plot of monthly returns
+<font size = 5>4.4 Visualizing Standard Deviation<br>
+Show the scatter plot of monthly returns</font>
 ```{r}
 portfolio_returns_dplyr_byhand %>%
   ggplot(aes(x = index, y = returns)) +
@@ -154,14 +154,14 @@ portfolio_returns_dplyr_byhand %>%
   ggtitle("Scatterplot of Returns by Date") +
   theme(plot.title = element_text(hjust = 0.5))
 ```
-Create indicators sd_plot/mean_plot
+<font size = 5>Create indicators sd_plot/mean_plot</font>
 ```{r}
 sd_plot <-
   sd(portfolio_returns_tq_rebalanced_monthly$returns)
 mean_plot <-
   mean(portfolio_returns_tq_rebalanced_monthly$returns)
 ```
-Set the returns that deviate from the mean too much to red/green
+<font size = 5>Set the returns that deviate from the mean too much to red/green
 ```{r}
 portfolio_returns_tq_rebalanced_monthly %>%
   mutate(hist_col_red =
@@ -186,7 +186,7 @@ portfolio_returns_tq_rebalanced_monthly %>%
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Add a line for the value that is one standard deviation above and below the mean
+<font size = 5>Add a line for the value that is one standard deviation above and below the mean</font>
 ```{r}
 portfolio_returns_tq_rebalanced_monthly %>%
   mutate(hist_col_red =
@@ -217,7 +217,7 @@ portfolio_returns_tq_rebalanced_monthly %>%
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-Visualize the actual standard deviation of our portfolio
+<font size = 5>Visualize the actual standard deviation of our portfolio</font>
 ```{r}
 asset_returns_long %>%
   group_by(assets) %>%
@@ -238,7 +238,7 @@ asset_returns_long %>%
   labs(y = "standard deviation")
 
 ```
-Visualizing expected monthly returns 
+<font size = 5>Visualizing expected monthly returns </font>
 ```{r}
 asset_returns_long %>%
   group_by(assets) %>%
@@ -267,7 +267,7 @@ asset_returns_long %>%
   theme_update(plot.title = element_text(hjust = 0.5))
 ```
 
-4.6 Rolling Standard Deviation in the xts world
+<font size = 5>4.6 Rolling Standard Deviation in the xts world</font>
 ```{r}
 window<-24
 portfolio_returns_xts_rebalanced_monthly <-
@@ -284,7 +284,7 @@ port_rolling_sd_xts <-
             `colnames<-`("rolling_sd")
 tail(port_rolling_sd_xts,5)
 ```
-4.7 Rolling standard deviation based on tidyverse
+<font size = 5>4.7 Rolling standard deviation based on tidyverse</font>
 ```{r}
 port_rolling_sd_tidy_does_not_work <-
   portfolio_returns_dplyr_byhand %>%
@@ -298,7 +298,7 @@ tail(port_rolling_sd_tidy_does_not_work,3)
 ```
 
 
-4.8 Rolling Standard Deviation with the tidyverse
+<font size = 5>4.8 Rolling Standard Deviation with the tidyverse</font>
 ```{r}
 # define a rolling sd function based on rollify of tibbletime package
 sd_roll_24 <-
@@ -312,7 +312,7 @@ port_rolling_sd_tidy_tibbletime <-
   na.omit()
 tail(port_rolling_sd_tidy_tibbletime, 3)
 ```
-4.9 Rolling Standard Deviation in the tidyquant world
+<font size = 5>4.9 Rolling Standard Deviation in the tidyquant world</font>
 ```{r}
 ## calculate std using tidyquant
 port_rolling_sd_tq <- 
@@ -329,7 +329,7 @@ port_rolling_sd_tidy_tibbletime %>%
          sd_xts = round(port_rolling_sd_xts$rolling_sd, 4)) %>%
   tail(3)
 ```
-4.10 Visualizing Rolling Standard Deviation in the xts world
+<font size = 5>4.10 Visualizing Rolling Standard Deviation in the xts world</font>
 ```{r}
 
 port_rolling_sd_xts_hc <-
@@ -348,7 +348,7 @@ highchart(type = "stock") %>%
   hc_exporting(enabled= TRUE) %>%
   hc_legend(enabled = TRUE)
 ```
-4.11 Visualizing Rolling Standard Deviation in the tidyverse
+<font size = 5>4.11 Visualizing Rolling Standard Deviation in the tidyverse</font>
 ```{r}
 port_rolling_sd_tq %>%
   ggplot(aes(x = index)) +
@@ -358,4 +358,4 @@ port_rolling_sd_tq %>%
   labs(title = "Rolling Standard Deviation", y = "") +
   theme(plot.title = element_text(hjust = 0.5))
 ```
-4.12 The Shiny is written in the app.Rmd in the Rmarkdown format
+<font size = 5>4.12 The Shiny is written in the app.Rmd in the Rmarkdown format</font>

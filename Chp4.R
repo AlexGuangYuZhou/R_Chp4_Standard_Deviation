@@ -25,10 +25,10 @@ library(purrr)
 library(tidyverse)
 library(tidyquant)
 library(ludridate)
-#???ĳɳ?֤ȯͶ?ʻ??? 000001
-#?к???ת??ծȯծȯ??֤ȯͶ?ʻ???A?? 000003
-#??��????֤ҽҩ100ָ??֤ȯͶ?ʻ??? 000059
-#?㷢?��????ز?ָ??֤ȯͶ?ʻ???????Ԫ??000180
+#华夏成长证券投资基金 000001
+#中海可转换债券债券型证券投资基金A类 000003
+#国联安中证医药100指数证券投资基金 000059
+#广发美国房地产指数证券投资基金（美元）000180
 mydb= dbConnect(MySQL(),user='ktruc002', password='35442fed', dbname='cn_stock_quote', host='172.19.3.250')
 SQL_statement<- "SELECT  `end_date`,  `fund_code`, `acc_net_value`
 FROM `cn_fund`.`net_value`
